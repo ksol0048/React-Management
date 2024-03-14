@@ -29,9 +29,9 @@ app.post('/login', (req, res) => {
   db.query(sql, [req.body.username, req.body.password], (err, data) => {
     if (err) return res.json("err");
     if (data.length > 0) {
-      return res.json("Login Successfully");
+      return res.json(true);
     } else {
-      return res.json("No Record");
+      return res.json(false);
     }
   })
 })

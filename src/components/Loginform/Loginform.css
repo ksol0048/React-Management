@@ -95,3 +95,11 @@
 .register-link p a:hover {
   text-decoration: underline;
 }
+
+.Text {
+  background-image: url('/src/components/Assets/jjago.jpg');
+  background-size: cover;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
