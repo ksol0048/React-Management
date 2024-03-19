@@ -1,12 +1,51 @@
 .wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 420px;
+  height: 460px;
   background: transparent;
-  border: 2px solid rgba(255, 255, 255, .2);
+  border: 2px solid rgba(255, 255, 255, .5);
   backdrop-filter: blur(30px);
-  box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: #efff;
   border-radius: 10px;
-  padding: 30px 40px;
+  overflow: hidden;
+  transition: height .2s ease;
+}
+
+.wrapper.active {
+  height: 540px;
+}
+
+.wrapper .form-box.login {
+  transition: transform .18s ease;
+  transform: translateX(0);
+}
+
+.wrapper.active .form-box.login {
+  transition: none;
+  transform: translateX(-400px);
+}
+
+.wrapper .form-box.register {
+  position: absolute;
+  transition: none;
+  transform: translateX(400px);
+}
+
+.wrapper.active .form-box.register {
+  transition: transform .18s ease;
+  transform: translateX(0);
+}
+
+.wrapper .form-box {
+  width: 100%;
+  padding: 40px;
 }
 
 .wrapper h1 {
@@ -80,19 +119,22 @@
   font-weight: 700;
 }
 
-.wrapper .register-link {
-  font-size: 14.5px;
+
+.login-register {
+  font-size: .9em;
+  color: #fff;
   text-align: center;
-  margin: 20px 0 15px;
+  font-weight: 500;
+  margin: 25px 0 10px;
 }
 
-.register-link p a {
+.login-register p a {
   color: #efff;
   text-decoration: none;
   font-weight: 600;
 }
 
-.register-link p a:hover {
+.login-register p a:hover {
   text-decoration: underline;
 }
 
