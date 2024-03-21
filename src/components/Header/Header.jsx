@@ -34,9 +34,9 @@ function Header() {
     <header>
       <h2 className='logo' onClick={goToHome}>MES</h2>
       <nav className='navigation'>
-        <a href='/#' onClick={goToAbout}>about </a>
-        <a href='/'>services </a>
-        <a href='/'>contact </a>
+        <span onClick={goToAbout}>about </span>
+        <span>services </span>
+        <span>contact </span>
         <b>{userdata}</b>
         <button className='btnLogin-popup' onClick={logout}>Logout</button>
       </nav>

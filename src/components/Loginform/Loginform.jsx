@@ -23,17 +23,23 @@ function Loginform() {
   const handleSubmit = (event) => {
     event.preventDefault();
     // 여기에서 로그인 처리를 할 수 있습니다.
-    axios.post('http://localhost:8081/login', { username, password })
+    axios.post('http://localhost:8080/login', { username, password })
       .then(res => {
-        if (res.data) {
+        const loginIds = [...new Set(res.data.map(item => item.loginid)),];
+        const loginpws = [...new Set(res.data.map(item => item.pw)),];
+        if (loginIds.includes(username) && loginpws.includes(password)) {
           setisLogin(true);
           setUserData(username);
-          // navigate('/home');
-          // window.location.href = '/home';
-        } else {
+        } /* else if (!loginIds.includes(username)) {
+          setUsername([]);
+          alert("아이디 재입력")
+        } else if (!loginpws.includes(password)) {
+          setPassword([]);
+          alert("비밀번호 재입력")
+        } */else {
           setUsername([]);
           setPassword([]);
-          alert("잘못된 정보입니다.")
+          alert("잘못된 정보입니다")
         }
         // 로그인이 성공하면 홈페이지로 이동
       })
@@ -105,7 +111,6 @@ function Loginform() {
           </div>
         </form>
       </div>
-      {/* <script src='script.js'></script> */}
     </div>
   )
 }
