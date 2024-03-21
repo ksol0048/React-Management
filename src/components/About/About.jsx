@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './About.css';
+import axios from 'axios';
 // var dbQueries = require('../../server/server');
 
 function About() {
@@ -7,88 +8,13 @@ function About() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
-  const data = [
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    { code: 'AAC', company: 'AUSTRALIAN COMPANY', price: '$1.38', change: '+2.01', changePercent: '-0.36%' },
-    { code: 'AAD', company: 'AUSENCO', price: '$2.38', change: '-0.01', changePercent: '-1.36%' },
-    
-  ];
-  
-  
-
- /*  // Example query
-  const query = 'SELECT * FROM tabledata';
-
-  // Execute the query
-  dbQueries.executeQuery(query, (err, results) => {
-    if (err) {
-      console.error('Error executing query:', err);
-      return;
-    }
-
-    // Log the results to the console
-    console.log('Query results:', results);
-  }); */
-
-  // const db = require('../../server/server');
-
-  // 예시: 특정 테이블에서 데이터 조회하기
-
-  // 데이터베이스 쿼리 직접 실행하기
-  /* db.query(`SELECT * FROM tabledata`, (error, results, fields) => {
-    if (error) {
-      console.error('Error executing query:', error);
-      return;
-    }
-    console.log('Query results:', results);
-  }); */
+  const [data, setData] = useState([]);
 
   useEffect(() => {
+    axios.post('http://localhost:8080/tabledata')
+      .then(res => {
+        setData(res.data);
+      })
     // Reset selected rows and select all state when navigating between pages
     setSelectedRows([]);
     setSelectAll(false);
@@ -170,7 +96,7 @@ function About() {
                   <td>{row.company}</td>
                   <td>{row.price}</td>
                   <td>{row.change}</td>
-                  <td>{row.changePercent}</td>
+                  <td>{row.changePrecent}</td>
                 </tr>
               ))}
             </tbody>

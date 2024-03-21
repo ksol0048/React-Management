@@ -31,7 +31,7 @@ router.post('/login', (req, res) => {
   })
 }) */
 
-router.get('/tabledata', (req, res) => {
+router.post('/tabledata', (req, res) => {
   const sql = 'SELECT * FROM tabledata';
   db.query(sql, (err, data) => {
     if (err) {
