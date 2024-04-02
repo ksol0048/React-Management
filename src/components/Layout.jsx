@@ -1,6 +1,6 @@
 import { styled } from '@material-ui/core';
 import React from 'react'
-import Homacontain from './Home_contain/Home_contain';
+import Homacontain from '../pages/Home_contain/Home_contain';
 import Header from './Header/Header';
 import '../App.css'
 

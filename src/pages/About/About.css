@@ -12,41 +12,34 @@ table {
   table-layout: fixed;
 }
 
-.tbl-container {
-  table-layout: fixed;
-  position: relative;
-  overflow-y: auto;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.tbl-container .tbl-header {
+/* .tbl-container .tbl-header {
   background-color: rgb(13, 13, 46);
   position: sticky;
   top: 0;
-}
+} */
 
-.tbl-container .tbl-content {
+/* .tbl-container .tbl-content {
   height: 600px;
-}
+} */
 
 
-th {
+/* th {
   padding: 20px 15px;
   text-align: center;
   font-weight: 500;
   font-size: 12px;
   color: #fff;
   text-transform: uppercase;
-}
+} */
 
-tr {
+/* tr {
   text-align: center;
   &:hover {
     background-color: rgba(255, 255, 255, 0.3);
   }
-}
+} */
 
-td {
+/* td {
   padding: 20px;
   text-align: center;
   vertical-align: middle;
@@ -54,30 +47,30 @@ td {
   font-size: 12px;
   color: #fff;
   border-bottom: solid 1px rgba(255, 255, 255, 0.1);
-}
+} */
 
 section {
   margin: 20px;
 }
 
-.tbl-controls {
+/* .tbl-controls {
   display: flex;
   align-items: center;
-  margin-top: 20px; /* Adjust margin as needed */
+  margin-top: 20px; 
 }
 
 .tbl-controls select {
-  margin-left: 30px; /* Add some space between select and buttons */
+  margin-left: 30px; 
 }
 
 .tbl-controls button {
-  margin-left: 10px; /* Add space between buttons */
+  margin-left: 10px; 
 }
 
 .selectrow{
   margin-left: 50px;
   margin-bottom: 20px;
-}
+} */
 
 
 

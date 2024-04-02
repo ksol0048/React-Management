@@ -5,6 +5,16 @@ export const isLoggedIn = atom({
   default: false,
 });
 
+export const isDialogOpen = atom({
+  key: "isDialogOpen",
+  default: false,
+});
+
+export const isEditDialog = atom({
+  key: "isEditDialog",
+  default: false,
+});
+
 export const userData = atom({
   key: "userData",
   default: {},

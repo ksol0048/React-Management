@@ -4,8 +4,9 @@ import { FaUser, FaLock } from "react-icons/fa";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { userData, isLoggedIn } from '../../states/page_atoms';
+import { userData,isLoggedIn } from '../states/page_atoms';
 import { RecoilState, useRecoilState } from 'recoil';
+import { fetchFormattedData } from '../../functions/sql_service';
 
 function Loginform() {
   const [, setUserData] = useRecoilState(userData);
@@ -22,28 +23,22 @@ function Loginform() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // 여기에서 로그인 처리를 할 수 있습니다.
-    axios.post('http://localhost:8080/login', { username, password })
-      .then(res => {
-        const loginIds = [...new Set(res.data.map(item => item.loginid)),];
-        const loginpws = [...new Set(res.data.map(item => item.pw)),];
-        if (loginIds.includes(username) && loginpws.includes(password)) {
-          setisLogin(true);
-          setUserData(username);
-        } /* else if (!loginIds.includes(username)) {
-          setUsername([]);
-          alert("아이디 재입력")
-        } else if (!loginpws.includes(password)) {
-          setPassword([]);
-          alert("비밀번호 재입력")
-        } */else {
-          setUsername([]);
-          setPassword([]);
-          alert("잘못된 정보입니다")
-        }
-        // 로그인이 성공하면 홈페이지로 이동
-      })
-      .catch(err => console.log(err));
+    fetchFormattedData({
+      from: "FROM login",
+    }).then(res => {
+      const loginIds = [...new Set(res.map(item => item.loginid)),];
+      const loginpws = [...new Set(res.map(item => item.pw)),];
+      if (loginIds.includes(username) && loginpws.includes(password)) {
+        setisLogin(true);
+        setUserData(username);
+      }else {
+        setUsername([]);
+        setPassword([]);
+        alert("잘못된 정보입니다")
+      }
+      // 로그인이 성공하면 홈페이지로 이동
+    })
+    .catch(err => console.log(err));
   };
 
   useEffect(() => {

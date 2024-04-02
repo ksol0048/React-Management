@@ -1,6 +1,6 @@
 import React from 'react'
 import './Header.css'
-import { currentPage, currentTab, userData, isLoggedIn } from '../../states/page_atoms'
+import { currentPage, currentTab, userData, isLoggedIn } from '../../pages/states/page_atoms'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 

@@ -1,11 +1,25 @@
-const express =require('express');
+const express = require('express');
 const router = express.Router();
-const db =require('../conn');
+const db = require('../conn');
 
+const standardHeader = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "POST",
+};
 /* router.get('/', (req, res) => {
   res.send('Root');
 }); */
 
+router.get('/tabledata', (req, res) => {
+  const sql = 'SELECT * FROM tabledata ORDER BY start_date DESC';
+  db.query(sql, (err, data) => {
+    if (err) {
+      return res.json("Error")
+    }
+    return res.json(data);
+  })
+})
 router.post('/login', (req, res) => {
   const sql = 'SELECT * FROM login';
   db.query(sql, (err, data) => {
@@ -16,20 +30,51 @@ router.post('/login', (req, res) => {
   })
 })
 
-/* router.post('/login', (req, res) => {
-  const sql = 'SELECT * FROM login WHERE loginid = ? AND pw = ?';
+router.post('/inserttabledata', (req, res) => {
+  const code = req.body.code;
+  const company = req.body.company;
+  const price = req.body.price;
+  const change = req.body.change;
+  const changePrecent = req.body.changePrecent;
+  const start_date = req.body.start_date;
 
-  db.query(sql, [req.body.username, req.body.password], (err, data) => {
+  const sql = `INSERT INTO tabledata (code, company, price, \`change\`, changePrecent, start_date)
+VALUES ('${code}', '${company}', '${price}', '${change}', '${changePrecent}', '${start_date}')`; //change는 mysql 예약키워드라서 \`change\`로 감싸서 사용
+
+  db.query(sql, (err, data) => {
     if (err) {
-      return res.json("err");
+      return res.json(err)
     }
-    if (data.length > 0) {
-      return res.json(true);
-    } else {
-      return res.json(false);
-    }
+    return res.json(data);
   })
-}) */
+})
+
+router.post("/select", (req, res) => {
+  try {
+    db.query(req.body["query"], (err, result) => {
+      if (err) {
+      } else {
+        res.status(201).json({ status: 201, data: result });
+      }
+    });
+    res.header(standardHeader);
+  } catch (error) {
+    res.status(422).json({ status: 422, error });
+  }
+});
+router.post("/insert", (req, res) => {
+  try {
+    db.query(req.body["query"], (err, result) => {
+      if (err) {
+      } else {
+        res.status(201).json({ status: 201, data: result });
+      }
+    });
+    res.header(standardHeader);
+  } catch (error) {
+    res.status(422).json({ status: 422, error });
+  }
+});
 
 router.post('/tabledata', (req, res) => {
   const sql = 'SELECT * FROM tabledata';
@@ -41,4 +86,4 @@ router.post('/tabledata', (req, res) => {
   })
 })
 
-module.exports =router;
+module.exports = router;

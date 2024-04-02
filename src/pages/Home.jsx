@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import Loginform from './Loginform/Loginform';
 import { styled } from '@material-ui/core';
-import Layout from './Layout';
+import Layout from '../components/Layout';
 import Homacontain from './Home_contain/Home_contain';
 import About from './About/About';
-import { currentPage, isLoggedIn } from '../states/page_atoms';
+import { currentPage, isLoggedIn } from './states/page_atoms';
 
 function Home() {
   const page = useRecoilValue(currentPage);
