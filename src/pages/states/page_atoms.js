@@ -15,8 +15,8 @@ export const isEditDialog = atom({
   default: false,
 });
 
-export const userData = atom({
-  key: "userData",
+export const userName = atom({
+  key: "userName",
   default: {},
 });
 
@@ -40,7 +40,7 @@ export const navi = atom({
     },
     /// 입출고관리
     {
-      name: "입출고관리",
+      name: "user_info",
     },
     /// 생산관리
     {
@@ -50,7 +50,7 @@ export const navi = atom({
     
 
     {
-      name: "품질검사",
+      name: "user_info",
     },
   ],
 });

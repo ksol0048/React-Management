@@ -19,8 +19,31 @@
 }
 
 .wrapper.active {
-  height: 540px;
+  height: 650px;
 }
+
+.input-box input[type='date'] {
+  position: relative;
+}
+
+/* 숨겨진 텍스트와 버튼을 표시하지 않음 */
+.input-box input[type='date']::-webkit-inner-spin-button,
+.input-box input[type='date']::-webkit-clear-button {
+  display: none;
+}
+
+/* 커스텀한 캘린더 아이콘을 클릭할 수 있도록 함 */
+.input-box input[type='date']::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+}
+
 
 .wrapper .form-box.login {
   transition: transform .18s ease;
@@ -88,12 +111,20 @@
   display: flex;
   justify-content: space-between;
   font-size: 14.5px;
-  margin: -15px 0 15px;
+  margin: 0px 0 15px;
 }
 
 .remember-forgot label input {
   accent-color: #fff;
   margin-right: 4px;
+}
+
+.error {
+  padding-top: 5px;
+  color: yellow;
+  font-size: 13px; /* equivalent to about 6 */
+  text-align: center;
+  font-weight: bold;
 }
 
 .remember-forgot a {
@@ -139,9 +170,10 @@
 }
 
 .Text {
-  background-image: url('/src/components/Assets/jjago.jpg');
+  /* background-image: url('/src/components/Assets/jjago.jpg');
   background-size: cover;
   background-clip: text;
   -webkit-background-clip: text;
-  color: transparent;
+  color: transparent; */
+  color: #fff;
 }

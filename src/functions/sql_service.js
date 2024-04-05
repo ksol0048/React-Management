@@ -52,7 +52,7 @@ async function insertData({ body = "" } = {}) {
   // var body = "SELECT * FROM item ORDER BY register_date DESC";
   try {
     const response = await axios.post(
-      "https://localhost:8080/insert",
+      "http://localhost:8080/insert",
       { query: body }
     );
     const datum = response.data;
@@ -67,7 +67,7 @@ async function deleteData({ body = "" } = {}) {
   //var body = `DELETE FROM item ${where}`;
   try {
     const response = await axios.post(
-      "https://localhost:8080/insert",
+      "http://localhost:8080/insert",
       { query: body }
     );
     const datum = response.data;
@@ -82,7 +82,7 @@ async function deleteOriginData({ from = "", where = "" } = {}) {
 
   try {
     const response = await axios.post(
-      "https://localhost:8080//insert",
+      "http://localhost:8080//insert",
       { query: body }
     );
     const datum = response.data;

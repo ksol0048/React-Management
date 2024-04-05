@@ -6,6 +6,7 @@ import Layout from '../components/Layout';
 import Homacontain from './Home_contain/Home_contain';
 import About from './About/About';
 import { currentPage, isLoggedIn } from './states/page_atoms';
+import UserInfo from './User_Info/User_info';
 
 function Home() {
   const page = useRecoilValue(currentPage);
@@ -20,6 +21,10 @@ function Home() {
 
     case "about":
       layout = <About />;
+      break;
+
+      case "user_info":
+      layout = <UserInfo />;
       break;
 
     default:

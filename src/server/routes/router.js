@@ -11,16 +11,16 @@ const standardHeader = {
   res.send('Root');
 }); */
 
-router.get('/tabledata', (req, res) => {
-  const sql = 'SELECT * FROM tabledata ORDER BY start_date DESC';
+/* router.get('/tabledata', (req, res) => {
+  const sql = 'SELECT * FROM tabledata WHERE start_date = "2024-03-29"';
   db.query(sql, (err, data) => {
     if (err) {
       return res.json("Error")
     }
     return res.json(data);
   })
-})
-router.post('/login', (req, res) => {
+}) */
+/* router.post('/login', (req, res) => {
   const sql = 'SELECT * FROM login';
   db.query(sql, (err, data) => {
     if (err) {
@@ -28,9 +28,9 @@ router.post('/login', (req, res) => {
     }
     return res.json(data);
   })
-})
+}) */
 
-router.post('/inserttabledata', (req, res) => {
+/* router.post('/inserttabledata', (req, res) => {
   const code = req.body.code;
   const company = req.body.company;
   const price = req.body.price;
@@ -47,7 +47,7 @@ VALUES ('${code}', '${company}', '${price}', '${change}', '${changePrecent}', '$
     }
     return res.json(data);
   })
-})
+}) */
 
 router.post("/select", (req, res) => {
   try {
@@ -76,7 +76,7 @@ router.post("/insert", (req, res) => {
   }
 });
 
-router.post('/tabledata', (req, res) => {
+/* router.post('/tabledata', (req, res) => {
   const sql = 'SELECT * FROM tabledata';
   db.query(sql, (err, data) => {
     if (err) {
@@ -84,6 +84,6 @@ router.post('/tabledata', (req, res) => {
     }
     return res.json(data);
   })
-})
+}) */
 
 module.exports = router;

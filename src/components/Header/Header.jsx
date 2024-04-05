@@ -1,12 +1,12 @@
 import React from 'react'
 import './Header.css'
-import { currentPage, currentTab, userData, isLoggedIn } from '../../pages/states/page_atoms'
+import { currentPage, currentTab, userName, isLoggedIn } from '../../pages/states/page_atoms'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 
 function Header() {
   const [, setisLogin] =useRecoilState(isLoggedIn);
-  const [userdata,] = useRecoilState(userData);
+  const [username,] = useRecoilState(userName);
   const [currTab, setCurrentTab] = useRecoilState(currentTab);
   const [page, setPage] = useRecoilState(currentPage);
 
@@ -24,6 +24,14 @@ function Header() {
       sub_page: "홈",
     });
   };
+  
+  const goToUserInfo = () => {
+    setCurrentTab("");
+    setPage({
+      name: "User_info",
+      sub_page: "user_info",
+    });
+  };
 
   const logout = () => {
     setisLogin(false);
@@ -37,7 +45,7 @@ function Header() {
         <span onClick={goToAbout}>about </span>
         <span>services </span>
         <span>contact </span>
-        <b>{userdata}</b>
+        <b onClick={goToUserInfo}>{username}</b>
         <button className='btnLogin-popup' onClick={logout}>Logout</button>
       </nav>
     </header>

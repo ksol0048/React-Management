@@ -3,64 +3,40 @@ import styled from "styled-components";
 import { useRecoilState } from "recoil";
 import { isDialogOpen, isEditDialog } from "../../states/page_atoms";
 import Dialog from "../../../components/Dialog";
-import { fetchFormattedData, insertData } from "../../../functions/sql_service";
-
+import axios from "axios";
 /**
  * 공정관리 - 설비관리 다이얼로그
  * @param {function} callback1 - onConfirm(): query 된 상태 그대로 새로고침
  * @param {function} callback2 - onInit(): query 없는 상태로 새로고침
  * @param {Object} activeRowData - 선택 된 데이터 리스트
  */
-function AboutDialog({ callback1, callback2, activeRowData }) {
+function LoginformDialog({ callback, callback2, activeRowData }) {
   const [dialog, setDialog] = useRecoilState(isDialogOpen);
   const [isEdit, setIsEdit] = useRecoilState(isEditDialog);
   const [isError, setIsError] = useState(true);
   const [inputs, setInputs] = useState({
-    code: "",
-    company: "",
-    price: "",
-    chance: "",
-    changePrecent: "",
-    start_date: "",
+    username: "",
+    loginid: "",
+    pw: "",
+    birth_date: "",
   });
 
   const inputProps = [
-    { title: "code *", name: "code", type: "text" },
-    { title: "Company *", name: "company", type: "text" },
-    { title: "Price *", name: "price", type: "text" },
-    { title: "chance *", name: "chance", type: "text" },
-    { title: "Change(%) *", name: "changePrecent", type: "text" },
-    { title: "등록일 *", name: "start_date", type: "date" }
+    { title: "UserName *", name: "username", type: "text" },
+    { title: "ID *", name: "loginid", type: "text" },
+    { title: "PassWord *", name: "pw", type: "text" },
+    { title: "생년월일 *", name: "birth_date", type: "date" }
 
   ];
-
-  // const smallInputProps = [
-  //   {
-  //     title: "거래처/부서명 *",
-  //     element: [
-  //       { title: "거래처", name: "account", type: "text" },
-  //       { title: "부서명", name: "sub_buy_manager", type: "text" },
-  //     ],
-  //   },
-  //   {
-  //     title: "사업자번호/대표자 *",
-  //     element: [
-  //       { title: "사업자번호", name: "buy_buy_manager", type: "text" },
-  //       { title: "대표자", name: "buy_manager_phone", type: "text" },
-  //     ],
-  //   },
-  // ];
 
   const resetData = () => {
     setIsEdit(false);
     setIsError(true);
     setInputs({
-      code: "",
-      company: "",
-      price: "",
-      chance: "",
-      changePrecent: "",
-      start_date: "",
+      username: "",
+      loginid: "",
+      pw: "",
+      birth_date: "",
     });
   };
 
@@ -69,20 +45,31 @@ function AboutDialog({ callback1, callback2, activeRowData }) {
       const tempData = { ...activeRowData };
       setIsError(false);
       setInputs({
-        code: tempData.code,
-        company: tempData.company,
-        price: tempData.price,
-        chance: tempData.chance,
-        changePrecent: tempData.changePrecent,
-        start_date: tempData.start_date,
+        username: tempData.username,
+        loginid: tempData.loginid,
+        pw: tempData.pw,
+        birth_date: tempData.start_date,
       });
     }
   }, [isEdit]);
 
   const onConfirm = () => {
-    var id = isEdit ? +activeRowData["id"] : Date.now();
+    axios.post('http://localhost:8080/inserttabledata', inputs)
+      .then(res => {
+        console.log(res)
+        callback();
+      }).catch(error => {
+        console.error('Error inserting data:', error);
+        // Handle error, if any
+      });
 
-    const regDttm = new Date(id + 9 * 3600 * 1000)
+    setDialog(false);
+    resetData();
+
+    /* 
+    var fmid = isEdit ? +activeRowData["fmid"] : Date.now();
+
+    const regDttm = new Date(fmid + 9 * 3600 * 1000)
       .toISOString()
       .slice(0, 19)
       .replace("T", " ");
@@ -92,12 +79,20 @@ function AboutDialog({ callback1, callback2, activeRowData }) {
     const usingData = finalResult;
 
     fetchFormattedData({
-      from: "FROM tabledata",
-      where: `WHERE code = "${usingData["code"]}"`,
+      from: "FROM ARD",
+      where: `WHERE facility_name = "${usingData["facility_name"]}"`,
     }).then((res) => {
-      const aboutData = {
-        id: '"' + id + '"',
-        code: '"' + usingData["code"] + '"',
+      const ardData = {
+        fmid: '"' + fmid + '"',
+        facility_name: '"' + usingData["facility_name"] + '"',
+        // facility_info: '"' + usingData["facility_info"] + '"',
+        final_maintenance_date:
+          '"' +
+          new Date(inputs["final_maintenance_date"])
+            .toISOString()
+            .slice(0, 19)
+            .replace("T", " ") +
+          '"',
         start_date:
           '"' +
           new Date(inputs["start_date"])
@@ -105,17 +100,28 @@ function AboutDialog({ callback1, callback2, activeRowData }) {
             .slice(0, 19)
             .replace("T", " ") +
           '"',
-        company: '"' + usingData["company"] + '"',
-        price: '"' + usingData["price"] + '"',
-        chance: '"' + usingData["chance"] + '"',
-        changePrecent: '"' + usingData["changePrecent"] + '"',
+        end_date:
+          '"' +
+          new Date(inputs["end_date"])
+            .toISOString()
+            .slice(0, 19)
+            .replace("T", " ") +
+          '"',
+
+        account: '"' + usingData["account"] + '"',
+        business_num: '"' + usingData["business_num"] + '"',
+        address: '"' + usingData["address"] + '"',
+        business_kind: '"' + usingData["business_kind"] + '"',
+        phone: '"' + usingData["phone"] + '"',
+        buy_manager: '"' + usingData["buy_manager"] + '"',
+        // unit_price: '"' + usingData["unit_price"] + '"',
         registered_date: '"' + regDttm + '"',
       };
 
       //for insert
-      let keys = Object.keys(aboutData);
+      let keys = Object.keys(ardData);
       let keyString = keys.join();
-      let values = Object.values(aboutData);
+      let values = Object.values(ardData);
       let valueString = values.join();
 
       // //for update
@@ -128,16 +134,16 @@ function AboutDialog({ callback1, callback2, activeRowData }) {
       let updateValuesString = updateValues.join();
 
       var body = isEdit
-        ? `UPDATE  tabledata SET ${updateValuesString} WHERE id =  ${aboutData["id"]}`
-        : `INSERT INTO tabledata (${keyString}) VALUES (${valueString})`;
+        ? `UPDATE  ARD SET ${updateValuesString} WHERE fmid =  "${res[0]["fmid"]}"`
+        : `INSERT INTO ARD (${keyString}) VALUES (${valueString})`;
 
       insertData({ body: body }).then((res) => {
-        isEdit ? callback2() : callback2();
+        isEdit ? callback1() : callback2();
       });
     });
 
     setDialog(false);
-    resetData();
+    resetData(); */
   };
 
   const onCancel = () => {
@@ -151,12 +157,10 @@ function AboutDialog({ callback1, callback2, activeRowData }) {
     setInputs(tempInputs);
 
     const requisiteList = [
-      "code",
-      'company',
-      'price',
-      'chance',
-      'changePrecent',
-      'start_date',
+      "username",
+      'loginid',
+      'pw',
+      'birth_date',
     ];
 
     let validationCheckList = [];
@@ -179,8 +183,8 @@ function AboutDialog({ callback1, callback2, activeRowData }) {
   return (
     <Dialog
       width={"500px"}
-      title={`About ${isEdit ? "수정" : "등록"}`}
-      confirmText={`${isEdit ? "수정" : "등록"}`}
+      title={`Forgot Password`}
+      confirmText="확인"
       cancelText="취소"
       onConfirm={onConfirm}
       onCancel={onCancel}
@@ -190,18 +194,6 @@ function AboutDialog({ callback1, callback2, activeRowData }) {
     >
       <PriceManagementBody>
         <ItemColumn>
-          {/* <Item key={"About"}>
-            <ItemTitle>◆ Code *</ItemTitle>
-            <InputItem
-              name="code"
-              type="text"
-              placeholder={"텍스트 입력"}
-              height={"34px"}
-              onChange={onValueChange}
-              defaultValue={inputs["code"]}
-              disabled={isEdit}
-            />
-          </Item> */}
           {inputProps.map((input) => {
             return (
               <Item key={input.title}>
@@ -313,4 +305,4 @@ const PriceManagementBody = styled.div`
   padding-bottom: 30px;
 `;
 
-export default AboutDialog;
+export default LoginformDialog;

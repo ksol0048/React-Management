@@ -50,11 +50,11 @@ function About() {
         ],
       },
       {
-        Header: "Change",
+        Header: "chance",
         columns: [
           {
             Header: "x",
-            accessor: "change",
+            accessor: "chance",
           },
         ],
       },
@@ -83,26 +83,25 @@ function About() {
 
   const changeDateFormat = (res) => {
     const tempData = [...res];
-  
+
     tempData.forEach((datum, i) => {
-      if (datum["start_date"] && typeof datum["start_date"] === 'string') {
-        tempData[i] = {
-          ...datum,
-          start_date: datum["start_date"].substring(0, 10),
-        };
-      }
+      tempData[i] = {
+        ...datum,
+        start_date: datum["start_date"]?.substring(0, 10),
+      };
     });
-  
+
     return tempData;
   };
+
   const onInit = () => {
     fetchFormattedData({
       from: "FROM tabledata",
-      orderBy:"ORDER BY start_date DESC"
+      orderBy: "ORDER BY start_date DESC"
     }).then(res => {
-        const tempData = [...changeDateFormat(res)];
-        setData(tempData);
-      })
+      const tempData = [...changeDateFormat(res)];
+      setData(tempData);
+    })
     setActiveRow({ index: -1 });
     // Reset selected rows and select all state when navigating between pages
     setSelectedRows([]);
@@ -112,17 +111,6 @@ function About() {
   useEffect(() => {
     onInit();
   }, [setData, currentPage]);
-
-  /* useEffect(() => {
-    axios.post('http://localhost:8080/tabledata')
-      .then(res => {
-        setData(res.data);
-      })
-    setActiveRow({ index: -1 });
-    // Reset selected rows and select all state when navigating between pages
-    setSelectedRows([]);
-    setSelectAll(false);
-  }, [currentPage]); */
 
 
   return (
@@ -134,7 +122,8 @@ function About() {
         isDeleteAvailable={isDeleteAvailable}
       >
         <AboutDialog
-          callback={onInit}
+          callback1={onInit}
+          callback2={onInit}
           activeRowData={activeRow}
         />
       </DetailHeader>
