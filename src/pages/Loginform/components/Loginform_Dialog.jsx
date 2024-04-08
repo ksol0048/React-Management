@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { FaUser, FaLock } from "react-icons/fa";
+import { BsCalendarDate } from "react-icons/bs";
 import { useRecoilState } from "recoil";
 import { isDialogOpen, isEditDialog } from "../../states/page_atoms";
 import Dialog from "../../../components/Dialog";
-import axios from "axios";
+import { fetchFormattedData, insertData } from "../../../functions/sql_service";
+import bcrypt from 'bcryptjs';
+
 /**
  * 공정관리 - 설비관리 다이얼로그
  * @param {function} callback1 - onConfirm(): query 된 상태 그대로 새로고침
@@ -12,144 +16,150 @@ import axios from "axios";
  */
 function LoginformDialog({ callback, callback2, activeRowData }) {
   const [dialog, setDialog] = useRecoilState(isDialogOpen);
-  const [isEdit, setIsEdit] = useRecoilState(isEditDialog);
   const [isError, setIsError] = useState(true);
+  const [data, setdata] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordcheckError, setPasswordcheckError] = useState("");
   const [inputs, setInputs] = useState({
     username: "",
     loginid: "",
     pw: "",
+    pwcheck: "",
     birth_date: "",
   });
 
-  const inputProps = [
-    { title: "UserName *", name: "username", type: "text" },
-    { title: "ID *", name: "loginid", type: "text" },
-    { title: "PassWord *", name: "pw", type: "text" },
-    { title: "생년월일 *", name: "birth_date", type: "date" }
+  const validatePassword = (password) => {
+    // 비밀번호 유효성을 검사하는 로직을 추가하세요.
+    // 예를 들어, 영문, 특수문자, 숫자 포함 8자 이상인지 확인할 수 있습니다.
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{9,20}$/;
+    return passwordRegex.test(password);
+  }; // 비밀번호 영문,특수문자, 숫자 설
 
-  ];
+  const useeffectError = (e) => {
+    const tempInputs = { ...inputs };
+    tempInputs[e.target.name] = e.target.value;
+
+    if (!validatePassword(tempInputs.pw) && tempInputs.pw !== '') {
+      setPasswordError("영문, 특수문자, 숫자 포함 8자 이상을 입력하세요");
+      setIsError(true);
+    } else if (tempInputs.pw === '') {
+      setPasswordError('');
+      setIsError(true);
+    } else {
+      setPasswordError("");
+    } //사용자 비밀번호 value
+  }; //pw에 의한 에러 코드
+
+  const useeffectError1 = (e) => {
+    const tempInputs = { ...inputs };
+    tempInputs[e.target.name] = e.target.value;
+    if (!validatePassword(tempInputs.pwcheck) && tempInputs.pwcheck !== '') {
+      setPasswordcheckError("영문, 특수문자, 숫자 포함 8자 이상을 입력하세요");
+      setIsError(true);
+    } else if (tempInputs.pw !== tempInputs.pwcheck) {
+      setPasswordcheckError("패스워드가 일치하지 않습니다.");
+      setIsError(true);
+    } else if (tempInputs.pwcheck === '') {
+      setPasswordcheckError('');
+      setIsError(true);
+    } else {
+      setPasswordcheckError('');
+    } //비밀번호 체크 value
+  }; //pwcheck에 의한 에러 코드
 
   const resetData = () => {
-    setIsEdit(false);
     setIsError(true);
     setInputs({
       username: "",
       loginid: "",
       pw: "",
+      pwcheck: "",
       birth_date: "",
     });
-  };
+  }; //리셋 데이터
 
   useEffect(() => {
-    if (isEdit) {
-      const tempData = { ...activeRowData };
-      setIsError(false);
-      setInputs({
-        username: tempData.username,
-        loginid: tempData.loginid,
-        pw: tempData.pw,
-        birth_date: tempData.start_date,
-      });
-    }
-  }, [isEdit]);
+    fetchFormattedData({
+      from: "FROM login",
+    }).then((res) => {
+      const tempData = { ...res };
+      setdata(tempData);
+    })
+  }, []);
 
   const onConfirm = () => {
-    axios.post('http://localhost:8080/inserttabledata', inputs)
-      .then(res => {
-        console.log(res)
-        callback();
-      }).catch(error => {
-        console.error('Error inserting data:', error);
-        // Handle error, if any
-      });
-
-    setDialog(false);
-    resetData();
-
-    /* 
-    var fmid = isEdit ? +activeRowData["fmid"] : Date.now();
-
-    const regDttm = new Date(fmid + 9 * 3600 * 1000)
+    const regDttm = new Date(Date.now() + 9 * 3600 * 1000)
       .toISOString()
-      .slice(0, 19)
+      .slice(0, 10)
       .replace("T", " ");
 
     const finalResult = { ...inputs };
 
     const usingData = finalResult;
 
-    fetchFormattedData({
-      from: "FROM ARD",
-      where: `WHERE facility_name = "${usingData["facility_name"]}"`,
-    }).then((res) => {
-      const ardData = {
-        fmid: '"' + fmid + '"',
-        facility_name: '"' + usingData["facility_name"] + '"',
-        // facility_info: '"' + usingData["facility_info"] + '"',
-        final_maintenance_date:
-          '"' +
-          new Date(inputs["final_maintenance_date"])
-            .toISOString()
-            .slice(0, 19)
-            .replace("T", " ") +
-          '"',
-        start_date:
-          '"' +
-          new Date(inputs["start_date"])
-            .toISOString()
-            .slice(0, 19)
-            .replace("T", " ") +
-          '"',
-        end_date:
-          '"' +
-          new Date(inputs["end_date"])
-            .toISOString()
-            .slice(0, 19)
-            .replace("T", " ") +
-          '"',
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(usingData["pw"], salt, (err, hash) => {
+        if (err) throw err;
+        const changepwData = {
+          pw: '"' + hash + '"', // Store hashed password
+          login_error_count: '"' + "0" + '"',
+          modification_date: '"' + regDttm + '"',
+        };
 
-        account: '"' + usingData["account"] + '"',
-        business_num: '"' + usingData["business_num"] + '"',
-        address: '"' + usingData["address"] + '"',
-        business_kind: '"' + usingData["business_kind"] + '"',
-        phone: '"' + usingData["phone"] + '"',
-        buy_manager: '"' + usingData["buy_manager"] + '"',
-        // unit_price: '"' + usingData["unit_price"] + '"',
-        registered_date: '"' + regDttm + '"',
-      };
+        //for insert
+        let keys = Object.keys(changepwData);
+        let values = Object.values(changepwData);
+        let keyString = keys.join();
+        let valueString = values.join();
 
-      //for insert
-      let keys = Object.keys(ardData);
-      let keyString = keys.join();
-      let values = Object.values(ardData);
-      let valueString = values.join();
+        var updateValues = [];
 
-      // //for update
-      var updateValues = [];
+        for (var i = 0; i < keys.length; i++) {
+          var a = keys[i] + "=" + values[i];
+          updateValues.push(a);
+        }
+        let updateValuesString = updateValues.join();
+        fetchFormattedData({
+          from: "FROM login",
+          where: `WHERE loginid = '${usingData.loginid}'`
+        }).then(res => {
+          var userData = res[0];
+          bcrypt.compare(usingData.pw, userData.pw, (err, response) => {
+            if (err) throw err;
+            console.log(response)
+            if (passwordError === "" && passwordcheckError === "" && response === false) {
+              var body = `UPDATE login SET ${updateValuesString} WHERE loginid = '${inputs.loginid}'`
 
-      for (var i = 0; i < keys.length; i++) {
-        var a = keys[i] + "=" + values[i];
-        updateValues.push(a);
-      }
-      let updateValuesString = updateValues.join();
-
-      var body = isEdit
-        ? `UPDATE  ARD SET ${updateValuesString} WHERE fmid =  "${res[0]["fmid"]}"`
-        : `INSERT INTO ARD (${keyString}) VALUES (${valueString})`;
-
-      insertData({ body: body }).then((res) => {
-        isEdit ? callback1() : callback2();
+              insertData({ body }).then((res) => {
+                alert("비밀번호가 변경되었습니다.");
+                setDialog(false);
+                resetData();
+              })
+            } else if (response === true) {
+              alert("이전 비밀번호와 일치합니다.\n" + "새로운 비밀번호를 입력해주세요");
+              setInputs(prevInputs => ({
+                ...prevInputs,
+                pw: "",
+                pwcheck: "",
+              }));
+            } else {
+              alert("입력이 잘못되었습니다.");
+              setInputs(prevInputs => ({
+                ...prevInputs,
+              }));
+            }
+          })
+        });
       });
     });
-
-    setDialog(false);
-    resetData(); */
-  };
+  }; //확인버튼 클릭 이벤트
 
   const onCancel = () => {
+    setPasswordError("");
+    setPasswordcheckError(" ")
     setDialog(false);
     resetData();
-  };
+  }; //취소버튼 클릭 이벤트
 
   const onValueChange = (e) => {
     const tempInputs = { ...inputs };
@@ -160,6 +170,7 @@ function LoginformDialog({ callback, callback2, activeRowData }) {
       "username",
       'loginid',
       'pw',
+      'pwcheck',
       'birth_date',
     ];
 
@@ -178,7 +189,33 @@ function LoginformDialog({ callback, callback2, activeRowData }) {
     } else {
       setIsError(false);
     }
-  };
+
+    if (e.target.name === 'pw') {
+      useeffectError(e);
+    } else if (e.target.name === 'pwcheck') {
+      useeffectError1(e);
+    } else if (areFieldsMatchingData !== true) {
+      setPasswordError("");
+      setPasswordcheckError("");
+      setInputs(prevInputs => ({
+        ...prevInputs,
+        pw: "",
+        pwcheck: "",
+      }));
+    }
+
+  }; // 값 변경 시 이벤트
+
+  const areFieldsMatchingData = () => {
+    const usernames = Object.values(data).map(item => item.username);
+    const loginids = Object.values(data).map(item => item.loginid);
+    const birth_dates = Object.values(data).map(item => item.birth_date);
+    return (
+      usernames.includes(inputs.username) &&
+      loginids.includes(inputs.loginid) &&
+      birth_dates.includes(inputs.birth_date)
+    );
+  }; //username, loginid, birth_date 일치 시 pw,pwcheck 렌더링
 
   return (
     <Dialog
@@ -194,21 +231,35 @@ function LoginformDialog({ callback, callback2, activeRowData }) {
     >
       <PriceManagementBody>
         <ItemColumn>
-          {inputProps.map((input) => {
-            return (
-              <Item key={input.title}>
-                <ItemTitle>◆ {input.title}</ItemTitle>
-                <InputItem
-                  name={input.name}
-                  type={input.type}
-                  defaultValue={inputs[input.name]}
-                  placeholder={"텍스트 입력"}
-                  height={"34px"}
-                  onChange={onValueChange}
-                />
-              </Item>
-            );
-          })}
+          <Item key="username">
+            <ItemTitle> <FaUser /> UserName *</ItemTitle>
+            <InputItem
+              name='username' type='text' placeholder='UserName' value={inputs.username || ""} onChange={onValueChange} required
+            />
+          </Item>
+          <Item key="loginid">
+            <ItemTitle><FaUser />  ID *</ItemTitle>
+            <InputItem
+              name="loginid" type='text' placeholder='ID' value={inputs.loginid || ""} onChange={onValueChange} required
+            />
+          </Item>
+          <Item key="birth_date">
+            <ItemTitle><BsCalendarDate /> 생년월일 *</ItemTitle>
+            <InputItem
+              name='birth_date' type='date' value={inputs.birth_date || ""}
+              onChange={onValueChange} required
+            />
+          </Item>
+          <Item key="pw" style={{ display: areFieldsMatchingData() ? 'flex' : 'none' }}>
+            <ItemTitle><FaLock /> PassWord *</ItemTitle>
+            <InputItem name='pw' type='password' placeholder='Password' value={inputs.pw || ""} onChange={onValueChange} required maxLength="20" />
+          </Item>
+          {passwordError && <Error>{passwordError}</Error>}
+          <Item key="pwcheck" style={{ display: areFieldsMatchingData() ? 'flex' : 'none' }}>
+            <ItemTitle><FaLock /> PassWord 확인 *</ItemTitle>
+            <InputItem name='pwcheck' type='password' placeholder='Password 확인' value={inputs.pwcheck || ""} onChange={onValueChange} required maxLength="20" />
+          </Item>
+          {passwordcheckError && <Error>{passwordcheckError}</Error>}
         </ItemColumn>
       </PriceManagementBody>
     </Dialog>
@@ -229,7 +280,7 @@ const Item = styled.div`
 `;
 
 const ItemTitle = styled.div`
-  width: ${({ width }) => width ?? "100px"};
+  width: ${({ width }) => width ?? "120px"};
 `;
 
 /* const SmallInputItem = styled.input`
@@ -274,7 +325,37 @@ const InputItem = styled.input`
   ::placeholder {
     color: #dddddd;
   }
+
+  &[type='date'] {
+    position: relative;
+
+    /* 숨겨진 텍스트와 버튼을 표시하지 않음 */
+    &::-webkit-inner-spin-button,
+    &::-webkit-clear-button {
+      display: none;
+    }
+
+    /* 커스텀한 캘린더 아이콘을 클릭할 수 있도록 함 */
+    &::-webkit-calendar-picker-indicator {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      color: transparent;
+      cursor: pointer;
+    }
+  }
 `;
+
+const Error = styled.div`
+  color: red;
+  font-size: 10px; /* equivalent to about 6 */
+  text-align: center;
+  font-weight: bold;
+`;
+
 
 const ItemColumn = styled.div`
   display: flex;

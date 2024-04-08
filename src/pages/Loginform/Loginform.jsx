@@ -131,9 +131,10 @@ function Loginform() {
           var body = `UPDATE login SET login_error_count = '${errorcount}' WHERE loginid = '${inputs.userID}'`;
 
           insertData({ body }).then(res => {
-            setInputs({
+            setInputs(prevInputs => ({
+              ...prevInputs,
               password: "",
-            });
+            }));
             alert("비밀번호가 잘못되었습니다\n" + "비밀번호 오류가 " + `${errorcount}` + "회 입니다.\n" + "비밀번호 재입력 혹은 비밀번호 찾기하세요."
             );
           })
