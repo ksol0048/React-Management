@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { FaUser, FaLock } from "react-icons/fa";
 import { BsCalendarDate } from "react-icons/bs";
@@ -10,7 +10,7 @@ import { fetchFormattedData, insertData } from '../../functions/sql_service';
 function UserInfo() {
   const [username,] = useRecoilState(userName);
   const [ID,] = useRecoilState(userid);
-  const [birthday,] = useRecoilState(userbirthday);
+  const [birthday, setbirthdate] = useRecoilState(userbirthday);
   const [checkpassword, setcheckpassword] = useState('');
   const [passwordError, setPasswordError] = useState("");
   const [passwordcheckError, setPasswordcheckError] = useState("");
@@ -19,7 +19,7 @@ function UserInfo() {
     password: "",
     pwcheck: "",
   });
-
+  
   const resetData = () => {
     setInputs({
       userbirthdate: birthday,
@@ -113,6 +113,12 @@ function UserInfo() {
               insertData({ body }).then((res) => {
                 alert("비밀번호가 변경되었습니다.");
                 resetData();
+
+              }).then((res) => {
+                setInputs({
+                  userbirthdate: usingData['userbirthdate'],
+                })
+                onInit();
               })
             } else if (passwordError !== "" || passwordcheckError !== "") {
               alert('비밀번호 입력이 잘못되었습니다.\n' + '다시 입력해주세요');
@@ -175,6 +181,21 @@ function UserInfo() {
       pwcheckError(e);
     }
   };
+
+  const onInit = () => {
+    fetchFormattedData({
+      from: "FROM login",
+      where: `WHERE loginid = '${ID}'`
+    }).then(res => {
+      var birth = res.map((data) => data.birth_date);
+      setbirthdate(birth);
+    })
+  }
+
+  useEffect(() => {
+    onInit();
+  }, []);
+
 
   return (
     <Wrapper>
