@@ -33,7 +33,7 @@ function LoginformDialog({ callback, callback2, activeRowData }) {
     // 예를 들어, 영문, 특수문자, 숫자 포함 8자 이상인지 확인할 수 있습니다.
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{9,20}$/;
     return passwordRegex.test(password);
-  }; // 비밀번호 영문,특수문자, 숫자 설
+  }; // 비밀번호 영문,특수문자, 숫자 설정
 
   const useeffectError = (e) => {
     const tempInputs = { ...inputs };
@@ -126,7 +126,7 @@ function LoginformDialog({ callback, callback2, activeRowData }) {
           var userData = res[0];
           bcrypt.compare(usingData.pw, userData.pw, (err, response) => {
             if (err) throw err;
-            console.log(response)
+            
             if (passwordError === "" && passwordcheckError === "" && response === false) {
               var body = `UPDATE login SET ${updateValuesString} WHERE loginid = '${inputs.loginid}'`
 

@@ -143,7 +143,7 @@ function AboutTable({ columns, data, rowSpanList }) {
                             column.Header === "Code" ||
                             column.Header === "Company" ||
                             column.Header === "Price" ||
-                            column.Header === "Change" ||
+                            column.Header === "chance" ||
                             column.Header === "Change(%)" ||
                             column.Header === "등록일" ||
                             column.Header.toString().includes("emptyRenderer()")

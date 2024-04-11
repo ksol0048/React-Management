@@ -20,6 +20,16 @@ export const userName = atom({
   default: {},
 });
 
+export const userid = atom({
+  key: "userid",
+  default: {},
+});
+
+export const userbirthday = atom({
+  key: "userbirthday",
+  default: {},
+});
+
 export const currentPage = atom({
   key: "currentPage",
   default: {

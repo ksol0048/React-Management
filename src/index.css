@@ -8,7 +8,7 @@
 
 body {
   min-height: 100vh;
-  background: url('./components/Assets/monitoring_background.png') no-repeat;
+  background: black;
   background-size: cover;
   background-position: center;
 }

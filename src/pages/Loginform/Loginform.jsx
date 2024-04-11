@@ -3,7 +3,7 @@ import './Loginform.css'
 import { FaUser, FaLock } from "react-icons/fa";
 import { BsCalendarDate } from "react-icons/bs";
 import { useState, useEffect } from 'react';
-import { userName, isLoggedIn, isDialogOpen } from '../states/page_atoms';
+import { userName, isLoggedIn, isDialogOpen, userid, userbirthday } from '../states/page_atoms';
 import { RecoilState, useRecoilState, useSetRecoilState } from 'recoil';
 import { fetchFormattedData, insertData } from '../../functions/sql_service';
 import LoginformDialog from './components/Loginform_Dialog';
@@ -13,11 +13,15 @@ import bcrypt from 'bcryptjs';
 function Loginform() {
   const [dialog, setDialog] = useRecoilState(isDialogOpen);
   // const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [checkboxon, setcheckboxon] = useState(false);
+  const [idcheckboxon, setidcheckboxon] = useState(false);
   const toggleDialog = () => {
     setDialog(true);
   };
   const [, setUserName] = useRecoilState(userName);
   const [, setisLogin] = useRecoilState(isLoggedIn);
+  const [, setUserID] = useRecoilState(userid);
+  const [, setuserbirthday] = useRecoilState(userbirthday);
   const [userAllID, setUserAllID] = useState('');
   const [userIDError, setUserIDError] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -30,6 +34,14 @@ function Loginform() {
     userpwcheck: "",
     userbirthdate: "",
   });
+
+  const handlecheckboxon = (e) => {
+    setcheckboxon(e.target.checked)
+  } //회원가입 개인정보 동의 체크 박스
+
+  const handleidcheckboxon = (e) => {
+    setidcheckboxon(e.target.checked)
+  } //로그인 id 저장 체크 박스
 
   const Error = (e) => {
     const tempInputs = { ...inputs };
@@ -57,7 +69,7 @@ function Loginform() {
       setPasswordcheckError("");
     } //비밀번호 체크 value
 
-    if (tempInputs.userbirthdate === "") {
+    if (tempInputs.userbirthdate === "" || tempInputs.userbirthdate === undefined) {
       setuserbirthdateError("생년월일을 선택하세요");
     } else {
       setuserbirthdateError("");
@@ -110,43 +122,42 @@ function Loginform() {
       where: `WHERE loginid = '${inputs.userID}'`
     }).then(res => {
       var userData = res[0];
-      bcrypt.compare(inputs.password, userData.pw, (err, response) => {
-        if (err) throw err;
-        if (userData === undefined || userData === null) {
-          setInputs({
-            userID: "",
-            password: "",
-          });
-          alert("잘못된 정보입니다");
-        } else if (userData.login_error_count > 5) {
-          setInputs({
-            userID: "",
-            password: "",
-          });
-          alert("비밀번호 오류 횟수가 5회를 초과하였습니다.\n" + "비밀번호 찾기를 통해 변경해주세요."
-          );
-        } else if (response === false) {
-          var errorcount = userData.login_error_count + 1;
 
-          var body = `UPDATE login SET login_error_count = '${errorcount}' WHERE loginid = '${inputs.userID}'`;
-
-          insertData({ body }).then(res => {
-            setInputs(prevInputs => ({
-              ...prevInputs,
+      if (userData !== undefined && userData !== null) {
+        bcrypt.compare(inputs.password, userData.pw, (err, response) => {
+          if (err) throw err;
+          if (userData.login_error_count > 5) {
+            setInputs({
+              userID: "",
               password: "",
-            }));
-            alert("비밀번호가 잘못되었습니다\n" + "비밀번호 오류가 " + `${errorcount}` + "회 입니다.\n" + "비밀번호 재입력 혹은 비밀번호 찾기하세요."
-            );
-          })
-
-        } else {
-          var body = `UPDATE login SET login_error_count = '0' WHERE loginid = '${inputs.userID}'`;
-
-          insertData({ body })
-          setisLogin(true);
-          setUserName(userData.username);
-        }
-      })
+            });
+            alert("비밀번호 오류 횟수가 5회를 초과하였습니다.\n" + "비밀번호 찾기를 통해 변경해주세요.");
+          } else if (response === false) {
+            var errorcount = userData.login_error_count + 1;
+            var body = `UPDATE login SET login_error_count = '${errorcount}' WHERE loginid = '${inputs.userID}'`;
+            insertData({ body }).then(res => {
+              setInputs(prevInputs => ({
+                ...prevInputs,
+                password: "",
+              }));
+              alert("비밀번호가 잘못되었습니다\n" + "비밀번호 오류가 " + `${errorcount}` + "회 입니다.\n" + "비밀번호 재입력 혹은 비밀번호 찾기하세요.");
+            });
+          } else {
+            var body = `UPDATE login SET login_error_count = '0' WHERE loginid = '${inputs.userID}'`;
+            insertData({ body });
+            setisLogin(true);
+            setUserName(userData.username);
+            setUserID(userData.loginid);
+            setuserbirthday(userData.birth_date);
+          }
+        });
+      } else {
+        setInputs({
+          userID: "",
+          password: "",
+        });
+        alert("잘못된 정보입니다");
+      }
     });
   }; // 로그인 버튼 이벤트
 
@@ -192,15 +203,17 @@ function Loginform() {
         let values = Object.values(registerData);
         let valueString = values.join();
 
-        if (userIDError === "" && passwordError === "" && passwordcheckError === "" && userbirthdateError === "") {
+        if (userIDError === "" && passwordError === "" && passwordcheckError === "" && userbirthdateError === "" && checkboxon === true) {
           var body = `INSERT INTO login (${keyString}) VALUES (${valueString})`;
-          console.log(body)
+
           insertData({ body }).then(res => {
             setInputs([]);
             alert("회원가입이 완료되었습니다.");
             const wrapper = document.querySelector('.wrapper');
             wrapper.classList.remove('active');
           })
+        } else if (checkboxon === false) {
+          alert("개인 정보 동의 해주세요.");
         } else {
           alert("입력이 잘못되었습니다.");
         }
@@ -255,7 +268,7 @@ function Loginform() {
             </div>
             <div className='remember-forgot'>
               <label>
-                <input type='checkbox' /> Remember me</label>
+                <input type='checkbox' name='idcheckbox' id='idcheckbox' checked={idcheckboxon} onChange={handleidcheckboxon} /> 아이디 저장</label>
               <a onClick={toggleDialog}>비밀번호 찾기</a>
             </div>
             <button type='submit' >Login</button>
@@ -295,7 +308,7 @@ function Loginform() {
             </div>
             <div className='remember-forgot'>
               <label>
-                <input type='checkbox' /> I agree to the terms & conditions</label>
+                <input type='checkbox' name='checkbox' id='checkbox' checked={checkboxon} onChange={handlecheckboxon} /> 개인정보 동의하십니까?</label>
             </div>
             <button type='submit'>회원가입</button>
             <div className='login-register'>

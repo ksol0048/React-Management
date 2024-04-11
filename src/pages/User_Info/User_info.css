@@ -1,39 +1,179 @@
-/* .contain {
+.wrapper {
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 420px;
-  height: 460px;
-} */
-
-/* .Box {
-  width: 80%;
-
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
-  border-radius: 20px;
-
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 41px;
-  padding: 26px;
-
-  text-align: center;
-
-  margin-bottom: 70px;
-
-  color: black;
-  span {
-    color: #979dac;
-  }
-} */
-
-/* .Wrapper {
+  width: 500px;
+  height: 600px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, .5);
+  backdrop-filter: blur(30px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, .5);
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  color: #efff;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: height .2s ease;
+}
 
+.wrapper.active {
+  height: 650px;
+}
+
+.input-box input[type='date'] {
+  position: relative;
+}
+
+/* 숨겨진 텍스트와 버튼을 표시하지 않음 */
+.input-box input[type='date']::-webkit-inner-spin-button,
+.input-box input[type='date']::-webkit-clear-button {
+  display: none;
+}
+
+/* 커스텀한 캘린더 아이콘을 클릭할 수 있도록 함 */
+.input-box input[type='date']::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
   width: 100%;
-  height: calc(90vh - 56px);
-} */
+  height: 100%;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+}
+
+
+.wrapper .form-box.login {
+  transition: transform .18s ease;
+  transform: translateX(0);
+}
+
+.wrapper.active .form-box.login {
+  transition: none;
+  transform: translateX(-400px);
+}
+
+.wrapper .form-box.register {
+  position: absolute;
+  transition: none;
+  transform: translateX(400px);
+}
+
+.wrapper.active .form-box.register {
+  transition: transform .18s ease;
+  transform: translateX(0);
+}
+
+.wrapper .form-box {
+  width: 100%;
+  padding: 40px;
+}
+
+.wrapper h1 {
+  font-size: 36px;
+  text-align: center;
+}
+
+.wrapper .input-box {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  margin: 30px 0;
+}
+
+.input-box input {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, .2);
+  outline: none;
+  border-radius: 40px;
+  font-size: 16px;
+  color: #efff;
+  padding: 20px 45px 20px 20px;
+}
+
+.input-box input::placeholder {
+  color: #efff;
+}
+
+.input-box .icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+}
+
+.wrapper .remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14.5px;
+  margin: 0px 0 15px;
+}
+
+.remember-forgot label input {
+  accent-color: #fff;
+  margin-right: 4px;
+}
+
+.error {
+  padding-top: 5px;
+  color: yellow;
+  font-size: 13px; /* equivalent to about 6 */
+  text-align: center;
+  font-weight: bold;
+}
+
+.remember-forgot a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.remember-forgot a:hover {
+  text-decoration: underline;
+}
+
+.wrapper button {
+  width: 100%;
+  height: 45px;
+  background: #fff;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  font-weight: 700;
+}
+
+
+.login-register {
+  font-size: .9em;
+  color: #fff;
+  text-align: center;
+  font-weight: 500;
+  margin: 25px 0 10px;
+}
+
+.login-register p a {
+  color: #efff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-register p a:hover {
+  text-decoration: underline;
+}
+
+.Text {
+  /* background-image: url('/src/components/Assets/jjago.jpg');
+  background-size: cover;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent; */
+  color: #fff;
+}
